@@ -1,0 +1,2793 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>এডুমেন্টর প্রো — শিক্ষকের বুদ্ধিমান প্ল্যাটফর্ম</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0f14;
+    --ink-2: #1a1d26;
+    --ink-3: #252836;
+    --surface: #f4f2ee;
+    --surface-2: #eceae4;
+    --cream: #faf8f4;
+    --gold: #e8c547;
+    --gold-2: #f0d060;
+    --teal: #2ec4b6;
+    --coral: #ff6b6b;
+    --violet: #7c6fcd;
+    --text: #0d0f14;
+    --text-muted: #6b7280;
+    --text-light: #9ca3af;
+    --border: rgba(13,15,20,0.1);
+    --shadow: 0 4px 24px rgba(13,15,20,0.08);
+    --shadow-lg: 0 12px 48px rgba(13,15,20,0.14);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Hind Siliguri', 'Satoshi', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--ink-3); border-radius: 3px; }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 260px;
+    background: var(--ink);
+    z-index: 100;
+    display: flex; flex-direction: column;
+    border-right: 1px solid rgba(255,255,255,0.05);
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar-brand {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .brand-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+
+  .brand-icon {
+    width: 36px; height: 36px;
+    background: var(--gold);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .brand-name {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: #fff;
+    line-height: 1;
+  }
+
+  .brand-sub {
+    font-size: 10px; color: var(--gold);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+
+  .nav-section-label {
+    font-size: 10px; color: rgba(255,255,255,0.3);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    font-weight: 600; padding: 8px 12px 4px;
+    margin-top: 12px;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: rgba(255,255,255,0.55);
+    font-size: 14px; font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+
+  .nav-item.active {
+    background: var(--gold);
+    color: var(--ink);
+  }
+
+  .nav-item.active .nav-icon { color: var(--ink); }
+
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--coral);
+    color: #fff;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: 20px;
+  }
+
+  .sidebar-profile {
+    padding: 16px 16px 20px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .profile-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--teal), var(--violet));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+
+  .profile-name { font-size: 13px; color: #fff; font-weight: 600; }
+  .profile-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* ===== MAIN CONTENT ===== */
+  .main {
+    margin-left: 260px;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* ===== TOPBAR ===== */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(250,248,244,0.9);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 64px;
+    display: flex; align-items: center; gap: 20px;
+  }
+
+  .topbar-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 20px; font-weight: 600;
+    flex: 1;
+  }
+
+  .topbar-search {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    width: 240px;
+  }
+
+  .topbar-search input {
+    border: none; background: none; outline: none;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 13px; color: var(--text);
+    width: 100%;
+  }
+
+  .topbar-search input::placeholder { color: var(--text-light); }
+
+  .topbar-btn {
+    width: 36px; height: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px;
+    transition: all 0.2s;
+  }
+
+  .topbar-btn:hover { background: var(--gold); border-color: var(--gold); }
+
+  /* ===== PAGE SECTIONS ===== */
+  .page { display: none; padding: 32px; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ===== DASHBOARD ===== */
+  .welcome-banner {
+    background: var(--ink);
+    border-radius: 20px;
+    padding: 32px 36px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .welcome-banner::before {
+    content: '';
+    position: absolute; top: -60px; right: -40px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+    opacity: 0.12;
+  }
+
+  .welcome-banner::after {
+    content: '';
+    position: absolute; bottom: -80px; left: 30%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, var(--teal) 0%, transparent 70%);
+    opacity: 0.1;
+  }
+
+  .welcome-text h2 {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 28px; font-weight: 700; color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .welcome-text p { color: rgba(255,255,255,0.5); font-size: 14px; }
+
+  .welcome-date {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 12px 20px;
+    text-align: center;
+    position: relative; z-index: 1;
+  }
+
+  .welcome-date .day { font-family: 'Clash Display', sans-serif; font-size: 36px; font-weight: 700; color: var(--gold); line-height: 1; }
+  .welcome-date .month { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    right: 0; height: 3px;
+  }
+
+  .stat-card.gold::before { background: var(--gold); }
+  .stat-card.teal::before { background: var(--teal); }
+  .stat-card.coral::before { background: var(--coral); }
+  .stat-card.violet::before { background: var(--violet); }
+
+  .stat-icon {
+    font-size: 24px; margin-bottom: 12px;
+  }
+
+  .stat-value {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 32px; font-weight: 700;
+    line-height: 1; margin-bottom: 4px;
+  }
+
+  .stat-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+
+  .stat-change {
+    position: absolute; top: 16px; right: 16px;
+    font-size: 11px; font-weight: 600;
+    padding: 3px 8px; border-radius: 20px;
+  }
+
+  .stat-change.up { background: #dcfce7; color: #16a34a; }
+  .stat-change.down { background: #fee2e2; color: #dc2626; }
+
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 15px; font-weight: 600;
+  }
+
+  .card-action {
+    font-size: 12px; color: var(--teal);
+    cursor: pointer; font-weight: 600;
+    text-decoration: none;
+  }
+
+  .card-body { padding: 20px 22px; }
+
+  /* Today's Classes */
+  .class-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .class-item:last-child { border-bottom: none; }
+
+  .class-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-muted);
+    width: 70px; flex-shrink: 0;
+  }
+
+  .class-color {
+    width: 4px; height: 36px;
+    border-radius: 2px; flex-shrink: 0;
+  }
+
+  .class-info { flex: 1; }
+  .class-name { font-size: 13px; font-weight: 600; }
+  .class-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .class-status {
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+  }
+
+  .class-status.live { background: #fef3c7; color: #d97706; }
+  .class-status.upcoming { background: #eff6ff; color: #2563eb; }
+  .class-status.done { background: #f3f4f6; color: #6b7280; }
+
+  /* Quick Tasks */
+  .task-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .task-item:last-child { border-bottom: none; }
+
+  .task-check {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    transition: all 0.2s;
+  }
+
+  .task-check.done { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+  .task-text { font-size: 13px; flex: 1; }
+  .task-text.done { text-decoration: line-through; color: var(--text-muted); }
+
+  /* ===== AI TEACHING ===== */
+  .ai-hero {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--ink-3) 100%);
+    border-radius: 20px;
+    padding: 36px;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 32px;
+    position: relative; overflow: hidden;
+  }
+
+  .ai-hero::before {
+    content: '✦';
+    position: absolute; top: -20px; right: 60px;
+    font-size: 120px; color: rgba(232,197,71,0.06);
+  }
+
+  .ai-chat-area {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 20px;
+    min-height: 320px;
+    max-height: 320px;
+    overflow-y: auto;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  .ai-message {
+    display: flex; gap: 10px;
+  }
+
+  .ai-avatar {
+    width: 32px; height: 32px; border-radius: 10px;
+    background: var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+
+  .ai-bubble {
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px 12px 12px 4px;
+    padding: 10px 14px;
+    font-size: 13px; color: rgba(255,255,255,0.85);
+    line-height: 1.6; max-width: 85%;
+  }
+
+  .user-message { flex-direction: row-reverse; }
+
+  .user-bubble {
+    background: var(--gold);
+    border-radius: 12px 12px 4px 12px;
+    padding: 10px 14px;
+    font-size: 13px; color: var(--ink);
+    line-height: 1.6; max-width: 85%;
+  }
+
+  .ai-input-row {
+    display: flex; gap: 10px; margin-top: 16px;
+  }
+
+  .ai-input {
+    flex: 1;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 10px 16px;
+    color: #fff; font-family: 'Satoshi', sans-serif;
+    font-size: 14px; outline: none;
+  }
+
+  .ai-input::placeholder { color: rgba(255,255,255,0.3); }
+
+  .ai-send-btn {
+    background: var(--gold);
+    border: none; border-radius: 10px;
+    padding: 10px 18px;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--ink); cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .ai-send-btn:hover { background: var(--gold-2); transform: scale(1.02); }
+
+  .ai-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .ai-tool-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ai-tool-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--gold); }
+
+  .ai-tool-icon { font-size: 28px; margin-bottom: 10px; }
+  .ai-tool-title { font-family: 'Clash Display', sans-serif; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .ai-tool-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+  .ai-tool-tag {
+    position: absolute; top: 14px; right: 14px;
+    background: var(--ink); color: var(--gold);
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 6px;
+  }
+
+  /* ===== CLASSES PAGE ===== */
+  .classes-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer; border: none;
+    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: var(--ink-2); transform: translateY(-1px); box-shadow: var(--shadow); }
+
+  .btn-gold {
+    background: var(--gold);
+    color: var(--ink);
+  }
+
+  .btn-gold:hover { background: var(--gold-2); transform: translateY(-1px); }
+
+  .btn-outline {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--text);
+  }
+
+  .btn-outline:hover { border-color: var(--ink); background: var(--surface); }
+
+  .classes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .class-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .class-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+  .class-card-header {
+    padding: 20px 20px 16px;
+    position: relative;
+  }
+
+  .class-card-grade {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .class-card-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 18px; font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .class-card-sub { font-size: 12px; color: var(--text-muted); }
+
+  .class-card-emoji {
+    position: absolute; top: 16px; right: 16px;
+    font-size: 32px;
+  }
+
+  .class-card-body { padding: 0 20px 20px; }
+
+  .class-card-stats {
+    display: flex; gap: 16px;
+    padding: 12px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+
+  .class-stat { text-align: center; flex: 1; }
+  .class-stat-val { font-family: 'Clash Display', sans-serif; font-size: 18px; font-weight: 700; }
+  .class-stat-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .class-card-actions { display: flex; gap: 8px; }
+
+  /* ===== MATERIALS ===== */
+  .materials-filter {
+    display: flex; gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .filter-chip {
+    padding: 7px 16px;
+    border-radius: 100px;
+    border: 1.5px solid var(--border);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    background: #fff;
+  }
+
+  .filter-chip:hover, .filter-chip.active {
+    background: var(--ink); color: #fff; border-color: var(--ink);
+  }
+
+  .materials-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .material-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .material-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+
+  .material-thumb {
+    height: 100px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+    position: relative;
+  }
+
+  .material-type {
+    position: absolute; top: 8px; right: 8px;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 6px;
+    background: rgba(0,0,0,0.6); color: #fff;
+  }
+
+  .material-body { padding: 12px; }
+  .material-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .material-meta { font-size: 11px; color: var(--text-muted); }
+
+  /* ===== ATTENDANCE ===== */
+  .attendance-date-bar {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .date-nav {
+    width: 32px; height: 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 14px;
+    transition: all 0.2s;
+  }
+
+  .date-nav:hover { background: var(--ink); color: #fff; }
+
+  .date-display {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 18px; font-weight: 600;
+    flex: 1;
+  }
+
+  .attendance-class-select {
+    display: flex; gap: 10px; margin-bottom: 20px;
+  }
+
+  .class-pill {
+    padding: 8px 18px;
+    border-radius: 100px;
+    border: 1.5px solid var(--border);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    background: #fff;
+  }
+
+  .class-pill.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .attendance-table-wrap {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .att-table { width: 100%; border-collapse: collapse; }
+
+  .att-table th {
+    background: var(--surface);
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .att-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .att-table tr:last-child td { border-bottom: none; }
+  .att-table tr:hover td { background: var(--surface); }
+
+  .student-id { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  .att-status {
+    display: flex; gap: 6px;
+  }
+
+  .att-btn {
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1.5px solid transparent;
+    font-size: 11px; font-weight: 700;
+    cursor: pointer; transition: all 0.18s;
+  }
+
+  .att-btn.present { background: #dcfce7; color: #16a34a; border-color: #86efac; }
+  .att-btn.absent { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+  .att-btn.late { background: #fef3c7; color: #d97706; border-color: #fcd34d; }
+
+  .att-btn.selected.present { background: #16a34a; color: #fff; }
+  .att-btn.selected.absent { background: #dc2626; color: #fff; }
+  .att-btn.selected.late { background: #d97706; color: #fff; }
+
+  .att-summary {
+    display: flex; gap: 12px;
+  }
+
+  .att-sum-card {
+    flex: 1; padding: 16px 20px;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .att-sum-card.present { background: #dcfce7; }
+  .att-sum-card.absent { background: #fee2e2; }
+  .att-sum-card.late { background: #fef3c7; }
+
+  .att-sum-val { font-family: 'Clash Display', sans-serif; font-size: 28px; font-weight: 700; }
+  .att-sum-lbl { font-size: 12px; font-weight: 600; margin-top: 2px; }
+
+  /* ===== QUIZ & EXAM ===== */
+  .quiz-gen-card {
+    background: var(--ink);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 24px;
+    display: flex; gap: 32px; align-items: flex-start;
+  }
+
+  .quiz-form { flex: 1; }
+  .quiz-form h3 {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 20px; font-weight: 700;
+    color: #fff; margin-bottom: 4px;
+  }
+
+  .quiz-form p { color: rgba(255,255,255,0.4); font-size: 13px; margin-bottom: 20px; }
+
+  .form-row { display: flex; gap: 12px; margin-bottom: 14px; }
+
+  .form-group { flex: 1; }
+
+  .form-label {
+    display: block;
+    font-size: 11px; font-weight: 700;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .form-input, .form-select {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: #fff; font-family: 'Satoshi', sans-serif;
+    font-size: 13px; outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus, .form-select:focus { border-color: var(--gold); }
+
+  .form-select option { background: var(--ink-2); color: #fff; }
+
+  .quiz-preview {
+    width: 280px; flex-shrink: 0;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .quiz-preview h4 { color: var(--gold); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; }
+
+  .preview-q {
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .preview-q:last-child { border-bottom: none; margin-bottom: 0; }
+  .preview-q-text { font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 8px; line-height: 1.5; }
+  .preview-option { font-size: 11px; color: rgba(255,255,255,0.4); padding: 3px 0; }
+  .preview-option.correct { color: var(--teal); }
+
+  .quiz-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .quiz-item {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex; align-items: center; gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .quiz-item:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+
+  .quiz-item-icon { font-size: 24px; }
+
+  .quiz-item-info { flex: 1; }
+  .quiz-item-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .quiz-item-meta { font-size: 12px; color: var(--text-muted); }
+
+  .quiz-item-stats { display: flex; gap: 12px; }
+  .quiz-stat { text-align: center; }
+  .quiz-stat-val { font-family: 'Clash Display', sans-serif; font-size: 16px; font-weight: 700; }
+  .quiz-stat-lbl { font-size: 10px; color: var(--text-muted); }
+
+  /* ===== CURRICULUM ===== */
+  .curriculum-timeline {
+    display: flex; flex-direction: column; gap: 0;
+    position: relative;
+  }
+
+  .curriculum-timeline::before {
+    content: '';
+    position: absolute; left: 20px; top: 0; bottom: 0;
+    width: 2px; background: var(--border);
+  }
+
+  .curriculum-week {
+    display: flex; gap: 0;
+    padding-left: 48px;
+    position: relative;
+    margin-bottom: 8px;
+  }
+
+  .curriculum-week::before {
+    content: '';
+    position: absolute; left: 15px;
+    top: 18px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px var(--gold);
+  }
+
+  .curriculum-week-card {
+    flex: 1;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .curriculum-week-card:hover { box-shadow: var(--shadow); transform: translateX(4px); }
+
+  .week-label {
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .week-topic {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 15px; font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .week-desc { font-size: 12px; color: var(--text-muted); }
+
+  .week-tags { display: flex; gap: 6px; margin-top: 10px; }
+
+  .tag {
+    font-size: 10px; font-weight: 600;
+    padding: 3px 10px; border-radius: 6px;
+    background: var(--surface); color: var(--text-muted);
+  }
+
+  /* ===== TRAINING / COURSES ===== */
+  .courses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .course-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .course-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+  .course-thumb {
+    height: 130px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 50px;
+    position: relative;
+  }
+
+  .course-level {
+    position: absolute; top: 12px; left: 12px;
+    font-size: 9px; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  .course-level.beginner { background: #dcfce7; color: #16a34a; }
+  .course-level.intermediate { background: #fef3c7; color: #d97706; }
+  .course-level.advanced { background: #fee2e2; color: #dc2626; }
+
+  .course-cert {
+    position: absolute; top: 12px; right: 12px;
+    background: var(--ink); color: var(--gold);
+    font-size: 9px; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px;
+    text-transform: uppercase;
+  }
+
+  .course-body { padding: 16px 18px; }
+  .course-title { font-family: 'Clash Display', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .course-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; }
+
+  .course-meta {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .course-meta-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--teal);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-label {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--text-muted);
+  }
+
+  /* Active Course Page */
+  .active-course {
+    display: none;
+  }
+
+  .active-course.show { display: flex; gap: 24px; }
+
+  .video-player {
+    flex: 1;
+  }
+
+  .video-screen {
+    background: var(--ink);
+    border-radius: 16px;
+    height: 340px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .video-play-btn {
+    width: 64px; height: 64px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .video-play-btn:hover { transform: scale(1.1); }
+
+  .video-controls {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px;
+  }
+
+  .video-progress-bar {
+    flex: 1; height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .video-progress-fill {
+    height: 100%;
+    background: var(--teal);
+    border-radius: 2px;
+    width: 35%;
+  }
+
+  .course-sidebar {
+    width: 280px; flex-shrink: 0;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  .lesson-list {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .lesson-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 13px;
+  }
+
+  .lesson-item:last-child { border-bottom: none; }
+  .lesson-item:hover { background: var(--surface); }
+  .lesson-item.active { background: #fef3c7; }
+
+  .lesson-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--text-muted);
+    width: 20px;
+  }
+
+  .lesson-icon { font-size: 14px; }
+  .lesson-title { flex: 1; font-weight: 500; }
+  .lesson-done { color: var(--teal); font-size: 14px; }
+
+  /* Certificate preview */
+  .cert-preview {
+    background: linear-gradient(135deg, #fefce8, #fef9c3);
+    border: 3px solid var(--gold);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cert-preview::before {
+    content: '🏆';
+    position: absolute; top: -10px; right: -10px;
+    font-size: 80px; opacity: 0.1;
+  }
+
+  .cert-preview h4 {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.15em; color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .cert-name {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--ink); margin-bottom: 4px;
+  }
+
+  .cert-course { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+
+  .cert-unlock {
+    font-size: 12px; color: var(--text-muted);
+    padding: 8px 14px;
+    background: rgba(232,197,71,0.2);
+    border-radius: 8px;
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(13,15,20,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    align-items: center; justify-content: center;
+  }
+
+  .modal-overlay.show { display: flex; }
+
+  .modal {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px;
+    width: 560px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  .modal-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .modal-title { font-family: 'Clash Display', sans-serif; font-size: 20px; font-weight: 700; }
+  .modal-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+  .modal-close {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .modal-close:hover { background: var(--ink); color: #fff; }
+
+  .light-form-group { margin-bottom: 16px; }
+
+  .light-label {
+    display: block;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted); margin-bottom: 6px;
+  }
+
+  .light-input, .light-select, .light-textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 13px; color: var(--text);
+    outline: none; transition: border-color 0.2s;
+  }
+
+  .light-input:focus, .light-select:focus, .light-textarea:focus { border-color: var(--gold); }
+  .light-textarea { resize: vertical; min-height: 80px; }
+
+  .modal-footer {
+    display: flex; justify-content: flex-end; gap: 10px;
+    margin-top: 24px; padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ===== NOTIFICATIONS ===== */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--ink);
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: var(--shadow-lg);
+    z-index: 999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-icon { font-size: 18px; }
+
+  /* ===== SECTION TITLE ===== */
+  .section-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 22px; font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .section-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+
+  /* ===== BOTTOM NAVIGATION (TABLET) ===== */
+  .bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--ink);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    z-index: 100;
+    padding: 8px 16px 12px;
+  }
+
+  .bottom-nav-items {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: rgba(255,255,255,0.5);
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 70px;
+    text-align: center;
+  }
+
+  .bottom-nav-item:hover {
+    color: rgba(255,255,255,0.8);
+  }
+
+  .bottom-nav-item.active {
+    background: var(--gold);
+    color: var(--ink);
+  }
+
+  .bottom-nav-icon {
+    font-size: 20px;
+  }
+
+  .bottom-nav-label {
+    font-size: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ===== RESPONSIVE adjustments ===== */
+  @media (max-width: 1200px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .materials-grid { grid-template-columns: repeat(3, 1fr); }
+    .ai-tools-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ===== TABLET MODE (768px - 1024px) ===== */
+  @media (max-width: 1024px) {
+    /* Hide desktop sidebar */
+    .sidebar {
+      transform: translateX(-100%);
+    }
+
+    /* Show bottom navigation */
+    .bottom-nav {
+      display: block;
+    }
+
+    /* Adjust main content */
+    .main {
+      margin-left: 0;
+      padding-bottom: 80px;
+    }
+
+    /* Adjust topbar */
+    .topbar {
+      padding: 0 20px;
+      height: 60px;
+    }
+
+    .topbar-title {
+      font-size: 18px;
+    }
+
+    .topbar-search {
+      width: 180px;
+    }
+
+    /* Adjust page padding */
+    .page {
+      padding: 24px 20px;
+    }
+
+    /* Stats grid - 2 columns on tablet */
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    /* Dashboard grid adjustment */
+    .dash-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    /* Classes grid */
+    .classes-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    /* Materials grid */
+    .materials-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    /* AI tools grid */
+    .ai-tools-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    /* Courses grid */
+    .courses-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    /* AI Hero section */
+    .ai-hero {
+      flex-direction: column;
+      padding: 28px;
+    }
+
+    .ai-hero > div:last-child {
+      width: 100%;
+    }
+
+    /* Quiz gen card */
+    .quiz-gen-card {
+      flex-direction: column;
+      padding: 28px;
+    }
+
+    .quiz-preview {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    /* Active course view */
+    .active-course {
+      flex-direction: column;
+    }
+
+    .course-sidebar {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .video-screen {
+      height: 280px;
+    }
+
+    /* Welcome banner */
+    .welcome-banner {
+      padding: 28px;
+    }
+
+    /* Topbar adjustments */
+    .topbar-btn {
+      width: 34px;
+      height: 34px;
+      font-size: 15px;
+    }
+  }
+
+  /* ===== MOBILE MODE (< 768px) ===== */
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .classes-grid,
+    .materials-grid,
+    .ai-tools-grid,
+    .courses-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .topbar-search {
+      display: none;
+    }
+
+    .bottom-nav-item {
+      min-width: 60px;
+      padding: 6px 8px;
+    }
+
+    .bottom-nav-icon {
+      font-size: 18px;
+    }
+
+    .bottom-nav-label {
+      font-size: 9px;
+    }
+  }
+
+  /* ===== AI typing indicator ===== */
+  .typing-dots {
+    display: flex; gap: 4px; align-items: center;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px 12px 12px 4px;
+    width: fit-content;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    animation: dotBounce 1.4s infinite ease-in-out;
+  }
+
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes dotBounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Color classes */
+  .bg-gold { background: linear-gradient(135deg, #fdf4b8, #fce96e); }
+  .bg-teal { background: linear-gradient(135deg, #ccfbf1, #5eead4); }
+  .bg-coral { background: linear-gradient(135deg, #ffe4e6, #fda4af); }
+  .bg-violet { background: linear-gradient(135deg, #ede9fe, #c4b5fd); }
+  .bg-blue { background: linear-gradient(135deg, #dbeafe, #93c5fd); }
+  .bg-green { background: linear-gradient(135deg, #dcfce7, #86efac); }
+
+  .text-gold { color: var(--gold); }
+  .text-teal { color: var(--teal); }
+  .text-coral { color: var(--coral); }
+  .text-violet { color: var(--violet); }
+
+  /* Loading pulse animation for skeleton */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .generating {
+    animation: pulse 1.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <a href="#" class="brand-logo" onclick="showPage('dashboard')">
+      <div class="brand-icon">🎓</div>
+      <div>
+        <div class="brand-name">এডুমেন্টর</div>
+        <div class="brand-sub">প্রো</div>
+      </div>
+    </a>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">প্রধান</div>
+    <div class="nav-item active" onclick="showPage('dashboard', this)">
+      <span class="nav-icon">🏠</span> ড্যাশবোর্ড
+    </div>
+    <div class="nav-item" onclick="showPage('classes', this)">
+      <span class="nav-icon">📚</span> আমার ক্লাস
+    </div>
+    <div class="nav-item" onclick="showPage('materials', this)">
+      <span class="nav-icon">📂</span> শিক্ষা উপকরণ
+    </div>
+    <div class="nav-item" onclick="showPage('attendance', this)">
+      <span class="nav-icon">✅</span> উপস্থিতি
+      <span class="nav-badge">আজ</span>
+    </div>
+
+    <div class="nav-section-label">এআই টুলস</div>
+    <div class="nav-item" onclick="showPage('ai', this)">
+      <span class="nav-icon">🤖</span> এআই সহায়ক
+    </div>
+    <div class="nav-item" onclick="showPage('quiz', this)">
+      <span class="nav-icon">📝</span> কুইজ ও পরীক্ষা
+    </div>
+    <div class="nav-item" onclick="showPage('curriculum', this)">
+      <span class="nav-icon">🗺️</span> পাঠ্যক্রম
+    </div>
+
+    <div class="nav-section-label">উন্নয়ন</div>
+    <div class="nav-item" onclick="showPage('training', this)">
+      <span class="nav-icon">🏆</span> প্রশিক্ষণ কোর্স
+    </div>
+  </nav>
+
+  <div class="sidebar-profile">
+    <div class="profile-avatar">সা</div>
+    <div>
+      <div class="profile-name">সারাহ জনসন</div>
+      <div class="profile-role">গণিত শিক্ষক</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <h1 class="topbar-title" id="topbar-title">ড্যাশবোর্ড</h1>
+    <div class="topbar-search">
+      <span>🔍</span>
+      <input type="text" placeholder="যেকোনো কিছু খুঁজুন…">
+    </div>
+    <div class="topbar-btn" title="বিজ্ঞপ্তি">🔔</div>
+    <div class="topbar-btn" title="সেটিংস">⚙️</div>
+  </header>
+
+  <!-- ==================== DASHBOARD ==================== -->
+  <section class="page active" id="page-dashboard">
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h2>শুভ সকাল, সারাহ! ☀️</h2>
+        <p>আজ আপনার ৪টি ক্লাস এবং ১২টি এসাইনমেন্ট পর্যালোচনা করতে হবে। চলুন শুরু করি।</p>
+      </div>
+      <div class="welcome-date">
+        <div class="day">১৭</div>
+        <div class="month">ফেব্রুয়ারি ২০২৬, মঙ্গল</div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card gold" onclick="showPage('classes')">
+        <div class="stat-icon">🏛️</div>
+        <div class="stat-value">৬</div>
+        <div class="stat-label">সক্রিয় ক্লাস</div>
+        <div class="stat-change up">↑ ১ নতুন</div>
+      </div>
+      <div class="stat-card teal" onclick="showPage('attendance')">
+        <div class="stat-icon">👨‍🎓</div>
+        <div class="stat-value">১৮৪</div>
+        <div class="stat-label">মোট শিক্ষার্থী</div>
+        <div class="stat-change up">↑ ৯৪.২%</div>
+      </div>
+      <div class="stat-card coral" onclick="showPage('quiz')">
+        <div class="stat-icon">📋</div>
+        <div class="stat-value">১২</div>
+        <div class="stat-label">পেন্ডিং রিভিউ</div>
+        <div class="stat-change down">↓ ৫ বাকি</div>
+      </div>
+      <div class="stat-card violet" onclick="showPage('training')">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-value">৩</div>
+        <div class="stat-label">চলমান কোর্স</div>
+        <div class="stat-change up">↑ ৬৮% গড়</div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">আজকের সময়সূচী</div>
+          <a class="card-action" onclick="showPage('classes')">সব দেখুন →</a>
+        </div>
+        <div class="card-body">
+          <div class="class-item">
+            <div class="class-time">০৮:০০ এএম</div>
+            <div class="class-color" style="background:#e8c547"></div>
+            <div class="class-info">
+              <div class="class-name">গণিত — দশম শ্রেণি-এ</div>
+              <div class="class-meta">রুম ২০৪ · ৩২ শিক্ষার্থী</div>
+            </div>
+            <div class="class-status done">সম্পন্ন</div>
+          </div>
+          <div class="class-item">
+            <div class="class-time">১০:০০ এএম</div>
+            <div class="class-color" style="background:#2ec4b6"></div>
+            <div class="class-info">
+              <div class="class-name">বীজগণিত-২ — একাদশ শ্রেণি-বি</div>
+              <div class="class-meta">রুম ১০৭ · ২৮ শিক্ষার্থী</div>
+            </div>
+            <div class="class-status live">🔴 চলছে</div>
+          </div>
+          <div class="class-item">
+            <div class="class-time">০১:০০ পিএম</div>
+            <div class="class-color" style="background:#7c6fcd"></div>
+            <div class="class-info">
+              <div class="class-name">পরিসংখ্যান — দ্বাদশ শ্রেণি</div>
+              <div class="class-meta">রুম ৩০১ · ২৪ শিক্ষার্থী</div>
+            </div>
+            <div class="class-status upcoming">আসছে</div>
+          </div>
+          <div class="class-item">
+            <div class="class-time">০৩:০০ পিএম</div>
+            <div class="class-color" style="background:#ff6b6b"></div>
+            <div class="class-info">
+              <div class="class-name">ক্যালকুলাস — দ্বাদশ শ্রেণি উন্নত</div>
+              <div class="class-meta">রুম ২০৪ · ১৮ শিক্ষার্থী</div>
+            </div>
+            <div class="class-status upcoming">আসছে</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">দ্রুত কাজ</div>
+            <a class="card-action">+ যোগ করুন</a>
+          </div>
+          <div class="card-body">
+            <div class="task-item">
+              <div class="task-check done" onclick="toggleTask(this)">✓</div>
+              <div class="task-text done">ইউনিট-৩ কুইজ মূল্যায়ন — দশম শ্রেণি-এ</div>
+            </div>
+            <div class="task-item">
+              <div class="task-check" onclick="toggleTask(this)"></div>
+              <div class="task-text">মিড-টার্ম পরীক্ষার প্রশ্ন তৈরি করুন</div>
+            </div>
+            <div class="task-item">
+              <div class="task-check" onclick="toggleTask(this)"></div>
+              <div class="task-text">সপ্তাহ-৬ পাঠ্যক্রম পরিকল্পনা আপডেট করুন</div>
+            </div>
+            <div class="task-item">
+              <div class="task-check" onclick="toggleTask(this)"></div>
+              <div class="task-text">এআই শিক্ষণ মডিউল-৩ সম্পন্ন করুন</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">এআই দ্রুত তৈরি</div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+            <button class="btn btn-gold" style="width:100%;justify-content:center;" onclick="showPage('quiz')">
+              📝 কুইজ তৈরি করুন
+            </button>
+            <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="showPage('curriculum')">
+              🗺️ পাঠ্যক্রম তৈরি করুন
+            </button>
+            <button class="btn btn-outline" style="width:100%;justify-content:center;" onclick="showPage('ai')">
+              🤖 এআই সহায়ক জিজ্ঞাসা করুন
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CLASSES ==================== -->
+  <section class="page" id="page-classes">
+    <div class="classes-header">
+      <div>
+        <div class="section-title">আমার ক্লাসসমূহ</div>
+        <div class="section-sub">আপনার ক্লাসরুম উপকরণ, শিক্ষার্থী ও সময়সূচী পরিচালনা করুন</div>
+      </div>
+      <button class="btn btn-gold" onclick="openModal('modal-class')">+ ক্লাস তৈরি করুন</button>
+    </div>
+
+    <div class="classes-grid">
+      <div class="class-card">
+        <div class="class-card-header bg-gold">
+          <div class="class-card-grade" style="color:#a37b00">দশম শ্রেণি</div>
+          <div class="class-card-title">গণিত</div>
+          <div class="class-card-sub">বিভাগ-এ — রুম ২০৪</div>
+          <div class="class-card-emoji">📐</div>
+        </div>
+        <div class="class-card-body">
+          <div class="class-card-stats">
+            <div class="class-stat"><div class="class-stat-val">৩২</div><div class="class-stat-lbl">শিক্ষার্থী</div></div>
+            <div class="class-stat"><div class="class-stat-val">৯৪%</div><div class="class-stat-lbl">উপস্থিতি</div></div>
+            <div class="class-stat"><div class="class-stat-val">১৮</div><div class="class-stat-lbl">উপকরণ</div></div>
+          </div>
+          <div class="class-card-actions">
+            <button class="btn btn-primary" onclick="showPage('materials')">📂 উপকরণ</button>
+            <button class="btn btn-outline" onclick="showPage('attendance')">✅ উপস্থিতি</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="class-card">
+        <div class="class-card-header bg-teal">
+          <div class="class-card-grade" style="color:#0f766e">একাদশ শ্রেণি</div>
+          <div class="class-card-title">বীজগণিত-২</div>
+          <div class="class-card-sub">বিভাগ-বি — রুম ১০৭</div>
+          <div class="class-card-emoji">✏️</div>
+        </div>
+        <div class="class-card-body">
+          <div class="class-card-stats">
+            <div class="class-stat"><div class="class-stat-val">২৮</div><div class="class-stat-lbl">শিক্ষার্থী</div></div>
+            <div class="class-stat"><div class="class-stat-val">৮৯%</div><div class="class-stat-lbl">উপস্থিতি</div></div>
+            <div class="class-stat"><div class="class-stat-val">১৪</div><div class="class-stat-lbl">উপকরণ</div></div>
+          </div>
+          <div class="class-card-actions">
+            <button class="btn btn-primary" onclick="showPage('materials')">📂 উপকরণ</button>
+            <button class="btn btn-outline" onclick="showPage('attendance')">✅ উপস্থিতি</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="class-card">
+        <div class="class-card-header bg-violet">
+          <div class="class-card-grade" style="color:#5b21b6">দ্বাদশ শ্রেণি</div>
+          <div class="class-card-title">পরিসংখ্যান</div>
+          <div class="class-card-sub">বিভাগ-এ — রুম ৩০১</div>
+          <div class="class-card-emoji">📊</div>
+        </div>
+        <div class="class-card-body">
+          <div class="class-card-stats">
+            <div class="class-stat"><div class="class-stat-val">২৪</div><div class="class-stat-lbl">শিক্ষার্থী</div></div>
+            <div class="class-stat"><div class="class-stat-val">৯৭%</div><div class="class-stat-lbl">উপস্থিতি</div></div>
+            <div class="class-stat"><div class="class-stat-val">২২</div><div class="class-stat-lbl">উপকরণ</div></div>
+          </div>
+          <div class="class-card-actions">
+            <button class="btn btn-primary" onclick="showPage('materials')">📂 উপকরণ</button>
+            <button class="btn btn-outline" onclick="showPage('attendance')">✅ উপস্থিতি</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="class-card">
+        <div class="class-card-header bg-coral">
+          <div class="class-card-grade" style="color:#b91c1c">দ্বাদশ শ্রেণি</div>
+          <div class="class-card-title">ক্যালকুলাস</div>
+          <div class="class-card-sub">উন্নত — রুম ২০৪</div>
+          <div class="class-card-emoji">∫</div>
+        </div>
+        <div class="class-card-body">
+          <div class="class-card-stats">
+            <div class="class-stat"><div class="class-stat-val">১৮</div><div class="class-stat-lbl">শিক্ষার্থী</div></div>
+            <div class="class-stat"><div class="class-stat-val">৯২%</div><div class="class-stat-lbl">উপস্থিতি</div></div>
+            <div class="class-stat"><div class="class-stat-val">২৬</div><div class="class-stat-lbl">উপকরণ</div></div>
+          </div>
+          <div class="class-card-actions">
+            <button class="btn btn-primary" onclick="showPage('materials')">📂 উপকরণ</button>
+            <button class="btn btn-outline" onclick="showPage('attendance')">✅ উপস্থিতি</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="class-card">
+        <div class="class-card-header bg-blue">
+          <div class="class-card-grade" style="color:#1d4ed8">নবম শ্রেণি</div>
+          <div class="class-card-title">প্রাক-বীজগণিত</div>
+          <div class="class-card-sub">বিভাগ-সি — রুম ১০৫</div>
+          <div class="class-card-emoji">🔢</div>
+        </div>
+        <div class="class-card-body">
+          <div class="class-card-stats">
+            <div class="class-stat"><div class="class-stat-val">৩০</div><div class="class-stat-lbl">শিক্ষার্থী</div></div>
+            <div class="class-stat"><div class="class-stat-val">৯১%</div><div class="class-stat-lbl">উপস্থিতি</div></div>
+            <div class="class-stat"><div class="class-stat-val">১০</div><div class="class-stat-lbl">উপকরণ</div></div>
+          </div>
+          <div class="class-card-actions">
+            <button class="btn btn-primary" onclick="showPage('materials')">📂 উপকরণ</button>
+            <button class="btn btn-outline" onclick="showPage('attendance')">✅ উপস্থিতি</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="class-card" style="border-style:dashed;display:flex;align-items:center;justify-content:center;min-height:200px;cursor:pointer;" onclick="openModal('modal-class')">
+        <div style="text-align:center;color:var(--text-muted)">
+          <div style="font-size:36px;margin-bottom:8px">+</div>
+          <div style="font-size:14px;font-weight:600">নতুন ক্লাস যোগ করুন</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== LEARNING MATERIALS ==================== -->
+  <section class="page" id="page-materials">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div class="section-title">Learning Materials</div>
+      <button class="btn btn-gold" onclick="openModal('modal-material')">+ Upload Material</button>
+    </div>
+    <div class="section-sub">Class & subject-specific resources for in-classroom teaching</div>
+
+    <div class="materials-filter">
+      <div class="filter-chip active" onclick="filterMat(this,'All')">All</div>
+      <div class="filter-chip" onclick="filterMat(this,'Grade 10')">Grade 10</div>
+      <div class="filter-chip" onclick="filterMat(this,'Grade 11')">Grade 11</div>
+      <div class="filter-chip" onclick="filterMat(this,'Grade 12')">Grade 12</div>
+      <div class="filter-chip" onclick="filterMat(this,'Slides')">Slides</div>
+      <div class="filter-chip" onclick="filterMat(this,'Video')">Video</div>
+      <div class="filter-chip" onclick="filterMat(this,'Worksheet')">Worksheet</div>
+      <div class="filter-chip" onclick="filterMat(this,'AI-Generated')">AI-Generated</div>
+    </div>
+
+    <div class="materials-grid">
+      <div class="material-card">
+        <div class="material-thumb bg-gold">📊 <span class="material-type">Slides</span></div>
+        <div class="material-body">
+          <div class="material-title">Quadratic Equations — Intro</div>
+          <div class="material-meta">Grade 10 · Mathematics · 24 slides</div>
+        </div>
+      </div>
+      <div class="material-card">
+        <div class="material-thumb bg-teal">🎬 <span class="material-type">Video</span></div>
+        <div class="material-body">
+          <div class="material-title">Understanding Derivatives</div>
+          <div class="material-meta">Grade 12 · Calculus · 14 min</div>
+        </div>
+      </div>
+      <div class="material-card">
+        <div class="material-thumb bg-coral">📄 <span class="material-type">Worksheet</span></div>
+        <div class="material-body">
+          <div class="material-title">Algebra Drill — Week 5</div>
+          <div class="material-meta">Grade 11 · Algebra II · 20 problems</div>
+        </div>
+      </div>
+      <div class="material-card">
+        <div class="material-thumb bg-violet">🤖 <span class="material-type">AI-Generated</span></div>
+        <div class="material-body">
+          <div class="material-title">Statistics Visualization Pack</div>
+          <div class="material-meta">Grade 12 · Statistics · 8 charts</div>
+        </div>
+      </div>
+      <div class="material-card">
+        <div class="material-thumb bg-blue">📊 <span class="material-type">Slides</span></div>
+        <div class="material-body">
+          <div class="material-title">Trigonometry Basics</div>
+          <div class="material-meta">Grade 10 · Mathematics · 18 slides</div>
+        </div>
+      </div>
+      <div class="material-card">
+        <div class="material-thumb bg-green">📄 <span class="material-type">Worksheet</span></div>
+        <div class="material-body">
+          <div class="material-title">Pre-Algebra Practice Set</div>
+          <div class="material-meta">Grade 9 · Pre-Algebra · 15 problems</div>
+        </div>
+      </div>
+      <div class="material-card">
+        <div class="material-thumb bg-gold">🎬 <span class="material-type">Video</span></div>
+        <div class="material-body">
+          <div class="material-title">Probability Concepts</div>
+          <div class="material-meta">Grade 12 · Statistics · 22 min</div>
+        </div>
+      </div>
+      <div class="material-card">
+        <div class="material-thumb bg-teal">🤖 <span class="material-type">AI-Generated</span></div>
+        <div class="material-body">
+          <div class="material-title">Calculus Concept Map</div>
+          <div class="material-meta">Grade 12 · Calculus · Visual guide</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ATTENDANCE ==================== -->
+  <section class="page" id="page-attendance">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div class="section-title">উপস্থিতি ট্র্যাকার</div>
+      <button class="btn btn-gold" onclick="saveAttendance()">💾 উপস্থিতি সংরক্ষণ করুন</button>
+    </div>
+    <div class="section-sub">ক্লাস অনুযায়ী দৈনিক শিক্ষার্থী উপস্থিতি চিহ্নিত ও পরিচালনা করুন</div>
+
+    <div class="attendance-date-bar">
+      <div class="date-nav" onclick="changeDate(-1)">←</div>
+      <div class="date-display" id="att-date">মঙ্গলবার, ১৭ ফেব্রুয়ারি, ২০২৬</div>
+      <div class="date-nav" onclick="changeDate(1)">→</div>
+    </div>
+
+    <div class="attendance-class-select">
+      <div class="class-pill active" onclick="selectAttClass(this,'Math 10A')">গণিত ১০এ</div>
+      <div class="class-pill" onclick="selectAttClass(this,'Algebra 11B')">বীজগণিত ১১বি</div>
+      <div class="class-pill" onclick="selectAttClass(this,'Stats 12')">পরিসংখ্যান ১২</div>
+      <div class="class-pill" onclick="selectAttClass(this,'Calculus 12')">ক্যালকুলাস ১২</div>
+    </div>
+
+    <div class="att-summary" style="margin-bottom:20px;">
+      <div class="att-sum-card present"><div class="att-sum-val" id="att-present-count">২৮</div><div class="att-sum-lbl">✅ উপস্থিত</div></div>
+      <div class="att-sum-card absent"><div class="att-sum-val" id="att-absent-count">২</div><div class="att-sum-lbl">❌ অনুপস্থিত</div></div>
+      <div class="att-sum-card late"><div class="att-sum-val" id="att-late-count">২</div><div class="att-sum-lbl">⏰ দেরি</div></div>
+    </div>
+
+    <div class="attendance-table-wrap">
+      <table class="att-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>শিক্ষার্থীর নাম</th>
+            <th>শিক্ষার্থী আইডি</th>
+            <th>অবস্থা</th>
+            <th>নোট</th>
+          </tr>
+        </thead>
+        <tbody id="att-body">
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== AI ASSISTANT ==================== -->
+  <section class="page" id="page-ai">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div>
+        <div class="section-title">এআই শিক্ষণ সহায়ক</div>
+        <div class="section-sub">আপনার বুদ্ধিমান ক্লাসরুম সহ-পাইলট</div>
+      </div>
+    </div>
+
+    <div class="ai-hero">
+      <div style="flex:1">
+        <div style="color:rgba(255,255,255,0.5);font-size:11px;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;margin-bottom:8px;">🤖 এডুমেন্টর এআই কে জিজ্ঞাসা করুন</div>
+        <div class="ai-chat-area" id="ai-chat">
+          <div class="ai-message">
+            <div class="ai-avatar">✦</div>
+            <div class="ai-bubble">হ্যালো সারাহ! আমি আপনার এআই শিক্ষণ সহায়ক। আমি আপনাকে <strong>পাঠ পরিকল্পনা তৈরি করতে</strong>, আপনার শিক্ষার্থীদের ধারণা ব্যাখ্যা করতে, কুইজ তৈরি করতে, পাঠ্যক্রম তৈরি করতে এবং আরও অনেক কিছুতে সাহায্য করতে পারি। আজ আপনি কী করতে চান?</div>
+          </div>
+        </div>
+        <div class="ai-input-row">
+          <input class="ai-input" id="ai-input" placeholder="যেকোনো কিছু জিজ্ঞাসা করুন — 'দ্বিঘাত সমীকরণের জন্য পাঠ পরিকল্পনা তৈরি করুন'..." onkeydown="if(event.key==='Enter')sendAIMessage()">
+          <button class="ai-send-btn" onclick="sendAIMessage()">পাঠান ↗</button>
+        </div>
+      </div>
+
+      <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:10px;position:relative;z-index:1;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">দ্রুত প্রম্পট</div>
+        <div onclick="quickPrompt('দশম শ্রেণির জন্য দ্বিঘাত সমীকরণের উপর ১০টি এমসিকিউ তৈরি করুন')" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:12px;color:rgba(255,255,255,0.7);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">📝 কুইজ তৈরি করুন</div>
+        <div onclick="quickPrompt('পরিসংখ্যান অধ্যায়-৩ শেখানোর জন্য বিস্তারিত পাঠ পরিকল্পনা তৈরি করুন')" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:12px;color:rgba(255,255,255,0.7);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">📋 পাঠ পরিকল্পনা</div>
+        <div onclick="quickPrompt('দ্বাদশ শ্রেণির শিক্ষার্থীদের সহজ ভাষায় অন্তরকলন ব্যাখ্যা করুন')" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:12px;color:rgba(255,255,255,0.7);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">💡 বিষয় ব্যাখ্যা করুন</div>
+        <div onclick="quickPrompt('একাদশ শ্রেণির বীজগণিত-২ এর জন্য ১০ সপ্তাহের পাঠ্যক্রম পরিকল্পনা তৈরি করুন')" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:12px;color:rgba(255,255,255,0.7);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">🗺️ পাঠ্যক্রম তৈরি করুন</div>
+        <div onclick="quickPrompt('বীজগণিত হোমওয়ার্ক মূল্যায়নের জন্য একটি রুব্রিক তৈরি করুন')" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:12px;color:rgba(255,255,255,0.7);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">📊 রুব্রিক তৈরি করুন</div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-bottom:6px;">এআই পাওয়ার টুলস</div>
+    <div class="section-sub">বিশেষায়িত এআই মডিউল দিয়ে তাৎক্ষণিকভাবে কন্টেন্ট তৈরি করুন</div>
+
+    <div class="ai-tools-grid">
+      <div class="ai-tool-card" onclick="showPage('quiz')">
+        <div class="ai-tool-icon">📝</div>
+        <div class="ai-tool-title">কুইজ জেনারেটর</div>
+        <div class="ai-tool-desc">শিক্ষার উদ্দেশ্যের সাথে সামঞ্জস্যপূর্ণ এমসিকিউ, সত্য/মিথ্যা এবং উন্মুক্ত প্রশ্ন তৈরি করুন।</div>
+        <div class="ai-tool-tag">এআই</div>
+      </div>
+      <div class="ai-tool-card" onclick="showPage('curriculum')">
+        <div class="ai-tool-icon">🗺️</div>
+        <div class="ai-tool-title">পাঠ্যক্রম নির্মাতা</div>
+        <div class="ai-tool-desc">সাপ্তাহিক উদ্দেশ্য এবং শিক্ষণ কৌশল সহ একটি সম্পূর্ণ সেমিস্টার পাঠ্যক্রম তৈরি করুন।</div>
+        <div class="ai-tool-tag">এআই</div>
+      </div>
+      <div class="ai-tool-card">
+        <div class="ai-tool-icon">📋</div>
+        <div class="ai-tool-title">পাঠ পরিকল্পনাকারী</div>
+        <div class="ai-tool-desc">কার্যকলাপ, উপকরণ এবং সময় ব্লক সহ কাঠামোবদ্ধ পাঠ পরিকল্পনা স্বয়ংক্রিয়ভাবে তৈরি করুন।</div>
+        <div class="ai-tool-tag">এআই</div>
+      </div>
+      <div class="ai-tool-card">
+        <div class="ai-tool-icon">📊</div>
+        <div class="ai-tool-title">রুব্রিক নির্মাতা</div>
+        <div class="ai-tool-desc">এসাইনমেন্ট, প্রজেক্ট এবং প্রেজেন্টেশনের জন্য বিস্তারিত গ্রেডিং রুব্রিক তৈরি করুন।</div>
+        <div class="ai-tool-tag">এআই</div>
+      </div>
+      <div class="ai-tool-card">
+        <div class="ai-tool-icon">✍️</div>
+        <div class="ai-tool-title">ফিডব্যাক লেখক</div>
+        <div class="ai-tool-desc">উৎসাহব্যঞ্জক এবং বৃদ্ধি-কেন্দ্রিক ব্যক্তিগতকৃত শিক্ষার্থী ফিডব্যাক তৈরি করুন।</div>
+        <div class="ai-tool-tag">এআই</div>
+      </div>
+      <div class="ai-tool-card">
+        <div class="ai-tool-icon">🎯</div>
+        <div class="ai-tool-title">স্লাইড জেনারেটর</div>
+        <div class="ai-tool-desc">মূল ধারণা, চিত্র এবং আলোচনা পয়েন্ট সহ উপস্থাপনা-প্রস্তুত স্লাইড তৈরি করুন।</div>
+        <div class="ai-tool-tag">এআই</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== QUIZ & EXAMS ==================== -->
+  <section class="page" id="page-quiz">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div>
+        <div class="section-title">কুইজ ও পরীক্ষা জেনারেটর</div>
+        <div class="section-sub">যেকোনো বিষয় বা মানদণ্ডের জন্য এআই-চালিত মূল্যায়ন তৈরি</div>
+      </div>
+    </div>
+
+    <div class="quiz-gen-card">
+      <div class="quiz-form">
+        <h3>🤖 এআই দিয়ে নতুন মূল্যায়ন তৈরি করুন</h3>
+        <p>নিচের বিবরণ পূরণ করুন এবং আমাদের এআই তাৎক্ষণিকভাবে আপনার কুইজ বা পরীক্ষা তৈরি করবে</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Assessment Type</label>
+            <select class="form-select" id="q-type">
+              <option>Quiz (5–10 questions)</option>
+              <option>Chapter Test (15–25 questions)</option>
+              <option>Midterm Exam (30–40 questions)</option>
+              <option>Final Exam (50+ questions)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Grade / Class</label>
+            <select class="form-select" id="q-grade">
+              <option>Grade 9 — Pre-Algebra</option>
+              <option>Grade 10 — Mathematics</option>
+              <option>Grade 11 — Algebra II</option>
+              <option>Grade 12 — Statistics</option>
+              <option>Grade 12 — Calculus</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Topic / Chapter</label>
+            <input class="form-input" id="q-topic" placeholder="e.g. Quadratic Equations, Derivatives..." value="Quadratic Equations">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Difficulty Level</label>
+            <select class="form-select" id="q-diff">
+              <option>Easy</option>
+              <option selected>Medium</option>
+              <option>Hard</option>
+              <option>Mixed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Question Types</label>
+            <select class="form-select" id="q-qtype">
+              <option>Multiple Choice (MCQ)</option>
+              <option>True / False</option>
+              <option>Short Answer</option>
+              <option>Mixed (MCQ + Short Answer)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Number of Questions</label>
+            <input class="form-input" id="q-num" type="number" value="10" min="5" max="60">
+          </div>
+        </div>
+
+        <button class="btn btn-gold" style="width:100%;justify-content:center;font-size:14px;padding:13px;" onclick="generateQuiz()">
+          ✦ Generate Assessment with AI
+        </button>
+      </div>
+
+      <div class="quiz-preview">
+        <h4>📋 Preview</h4>
+        <div id="quiz-preview-content">
+          <div class="preview-q">
+            <div class="preview-q-text">Q1. What is the solution of x² - 5x + 6 = 0?</div>
+            <div class="preview-option correct">✓ A. x = 2 and x = 3</div>
+            <div class="preview-option">B. x = 1 and x = 6</div>
+            <div class="preview-option">C. x = -2 and x = -3</div>
+            <div class="preview-option">D. x = 4 and x = -1</div>
+          </div>
+          <div class="preview-q">
+            <div class="preview-q-text">Q2. The discriminant b² - 4ac determines the nature of?</div>
+            <div class="preview-option correct">✓ A. Roots of the equation</div>
+            <div class="preview-option">B. Coefficients</div>
+            <div class="preview-option">C. Degree of polynomial</div>
+            <div class="preview-option">D. None of the above</div>
+          </div>
+          <div class="preview-q">
+            <div class="preview-q-text">Q3. Which method cannot be used to solve a quadratic equation?</div>
+            <div class="preview-option">A. Factoring</div>
+            <div class="preview-option">B. Completing the square</div>
+            <div class="preview-option correct">✓ C. Long division</div>
+            <div class="preview-option">D. Quadratic formula</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-bottom:6px;font-size:18px;">Recent Assessments</div>
+    <div style="margin-bottom:20px;color:var(--text-muted);font-size:13px;">Your previously created quizzes and exams</div>
+
+    <div class="quiz-list">
+      <div class="quiz-item">
+        <div class="quiz-item-icon">📝</div>
+        <div class="quiz-item-info">
+          <div class="quiz-item-title">Chapter 3 Quiz — Quadratic Equations</div>
+          <div class="quiz-item-meta">Grade 10 Mathematics · 10 MCQs · Medium · Created Feb 14</div>
+        </div>
+        <div class="quiz-item-stats">
+          <div class="quiz-stat"><div class="quiz-stat-val">28</div><div class="quiz-stat-lbl">Submitted</div></div>
+          <div class="quiz-stat"><div class="quiz-stat-val">72%</div><div class="quiz-stat-lbl">Avg Score</div></div>
+        </div>
+        <button class="btn btn-outline" style="font-size:12px;padding:7px 14px;">View Results</button>
+      </div>
+
+      <div class="quiz-item">
+        <div class="quiz-item-icon">📋</div>
+        <div class="quiz-item-info">
+          <div class="quiz-item-title">Mid-Term Test — Algebra II</div>
+          <div class="quiz-item-meta">Grade 11 · 25 questions · Mixed · Created Feb 10</div>
+        </div>
+        <div class="quiz-item-stats">
+          <div class="quiz-stat"><div class="quiz-stat-val">26</div><div class="quiz-stat-lbl">Submitted</div></div>
+          <div class="quiz-stat"><div class="quiz-stat-val">68%</div><div class="quiz-stat-lbl">Avg Score</div></div>
+        </div>
+        <button class="btn btn-outline" style="font-size:12px;padding:7px 14px;">View Results</button>
+      </div>
+
+      <div class="quiz-item">
+        <div class="quiz-item-icon">🏆</div>
+        <div class="quiz-item-info">
+          <div class="quiz-item-title">Final Exam — Statistics</div>
+          <div class="quiz-item-meta">Grade 12 · 50 questions · Hard · Created Jan 28</div>
+        </div>
+        <div class="quiz-item-stats">
+          <div class="quiz-stat"><div class="quiz-stat-val">22</div><div class="quiz-stat-lbl">Submitted</div></div>
+          <div class="quiz-stat"><div class="quiz-stat-val">78%</div><div class="quiz-stat-lbl">Avg Score</div></div>
+        </div>
+        <button class="btn btn-outline" style="font-size:12px;padding:7px 14px;">View Results</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CURRICULUM ==================== -->
+  <section class="page" id="page-curriculum">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div>
+        <div class="section-title">AI Curriculum Builder</div>
+        <div class="section-sub">Auto-generate semester-long teaching plans aligned to standards</div>
+      </div>
+      <button class="btn btn-gold" onclick="generateCurriculum()">✦ Generate with AI</button>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-body">
+        <div class="form-row" style="margin:0;">
+          <div class="form-group" style="flex:none;width:auto;min-width:160px;">
+            <label class="light-label">Class</label>
+            <select class="light-select">
+              <option>Grade 12 — Statistics</option>
+              <option>Grade 10 — Mathematics</option>
+              <option>Grade 11 — Algebra II</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:none;width:auto;min-width:140px;">
+            <label class="light-label">Duration</label>
+            <select class="light-select">
+              <option>12 Weeks (Semester)</option>
+              <option>8 Weeks (Quarter)</option>
+              <option>20 Weeks (Full Year)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="light-label">Curriculum Focus / Standards</label>
+            <input class="light-input" value="Common Core Math Standards — Grade 12 Statistics">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div style="font-family:'Clash Display',sans-serif;font-size:16px;font-weight:700;">📚 Grade 12 — Statistics (12-Week Plan)</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline" style="font-size:12px;padding:7px 14px;">📥 Export PDF</button>
+        <button class="btn btn-outline" style="font-size:12px;padding:7px 14px;">📋 Copy to Clipboard</button>
+      </div>
+    </div>
+
+    <div class="curriculum-timeline" id="curriculum-list">
+      <div class="curriculum-week">
+        <div class="curriculum-week-card">
+          <div class="week-label">Week 1–2</div>
+          <div class="week-topic">Introduction to Data & Descriptive Statistics</div>
+          <div class="week-desc">Types of data, measures of central tendency, frequency distributions, and visual representations.</div>
+          <div class="week-tags">
+            <span class="tag">Lecture</span><span class="tag">Worksheet</span><span class="tag">Group Work</span>
+          </div>
+        </div>
+      </div>
+      <div class="curriculum-week">
+        <div class="curriculum-week-card">
+          <div class="week-label">Week 3–4</div>
+          <div class="week-topic">Probability Foundations</div>
+          <div class="week-desc">Classical probability, conditional probability, independence, Bayes theorem, and combinatorics.</div>
+          <div class="week-tags">
+            <span class="tag">Lecture</span><span class="tag">Problem Sets</span><span class="tag">Quiz</span>
+          </div>
+        </div>
+      </div>
+      <div class="curriculum-week">
+        <div class="curriculum-week-card">
+          <div class="week-label">Week 5–6</div>
+          <div class="week-topic">Random Variables & Probability Distributions</div>
+          <div class="week-desc">Discrete and continuous distributions, binomial, Poisson, normal distributions and their applications.</div>
+          <div class="week-tags">
+            <span class="tag">Lab Activity</span><span class="tag">Case Study</span><span class="tag">Test</span>
+          </div>
+        </div>
+      </div>
+      <div class="curriculum-week">
+        <div class="curriculum-week-card">
+          <div class="week-label">Week 7–8</div>
+          <div class="week-topic">Sampling Techniques & Estimation</div>
+          <div class="week-desc">Random sampling, sampling distributions, Central Limit Theorem, and confidence intervals.</div>
+          <div class="week-tags">
+            <span class="tag">Simulation</span><span class="tag">Quiz</span><span class="tag">Discussion</span>
+          </div>
+        </div>
+      </div>
+      <div class="curriculum-week">
+        <div class="curriculum-week-card">
+          <div class="week-label">Week 9–10</div>
+          <div class="week-topic">Hypothesis Testing</div>
+          <div class="week-desc">Null/alternative hypothesis, p-values, t-tests, chi-square tests, and error types.</div>
+          <div class="week-tags">
+            <span class="tag">Lecture</span><span class="tag">Problem Solving</span><span class="tag">Midterm</span>
+          </div>
+        </div>
+      </div>
+      <div class="curriculum-week">
+        <div class="curriculum-week-card">
+          <div class="week-label">Week 11–12</div>
+          <div class="week-topic">Regression & Final Review</div>
+          <div class="week-desc">Linear regression, correlation, least squares method, model interpretation, and comprehensive review for finals.</div>
+          <div class="week-tags">
+            <span class="tag">Project</span><span class="tag">Review</span><span class="tag">Final Exam</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TRAINING ==================== -->
+  <section class="page" id="page-training">
+    <div style="margin-bottom:8px;">
+      <div class="section-title">শিক্ষক প্রশিক্ষণ কেন্দ্র</div>
+      <div class="section-sub">আপনার দক্ষতা বৃদ্ধি করুন, সার্টিফিকেট অর্জন করুন, আরও ভাল শিক্ষক হয়ে উঠুন</div>
+    </div>
+
+    <div id="courses-view">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div class="materials-filter" style="margin-bottom:0;">
+          <div class="filter-chip active">সব কোর্স</div>
+          <div class="filter-chip">চলমান</div>
+          <div class="filter-chip">সম্পন্ন</div>
+          <div class="filter-chip">এআই ও প্রযুক্তি</div>
+          <div class="filter-chip">শিক্ষাদান পদ্ধতি</div>
+        </div>
+      </div>
+
+      <div class="courses-grid">
+        <div class="course-card" onclick="openCourse()">
+          <div class="course-thumb bg-gold">🤖<span class="course-level intermediate">মধ্যবর্তী</span><span class="course-cert">🏆 সার্টিফিকেট</span></div>
+          <div class="course-body">
+            <div class="course-title">আধুনিক শিক্ষকদের জন্য এআই টুলস</div>
+            <div class="course-desc">আরও ভাল পাঠ তৈরি, গ্রেডিং স্বয়ংক্রিয় করা এবং বড় পরিসরে শিক্ষা ব্যক্তিগতকরণের জন্য এআই-চালিত টুলগুলো আয়ত্ত করুন।</div>
+            <div class="course-meta">
+              <div class="course-meta-item">🎬 ২৪ ভিডিও</div>
+              <div class="course-meta-item">⏱️ ৮ ঘণ্টা</div>
+              <div class="course-meta-item">📝 ৩ পরীক্ষা</div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div>
+            <div class="progress-label"><span>৬৫% সম্পূর্ণ</span><span>১৫/২৪ পাঠ</span></div>
+          </div>
+        </div>
+
+        <div class="course-card" onclick="openCourse()">
+          <div class="course-thumb bg-teal">📊<span class="course-level advanced">উন্নত</span><span class="course-cert">🏆 সার্টিফিকেট</span></div>
+          <div class="course-body">
+            <div class="course-title">ডেটা-চালিত ক্লাসরুম ম্যানেজমেন্ট</div>
+            <div class="course-desc">ক্লাসরুমের ফলাফল উন্নত করতে শিক্ষার্থীর ডেটা, উপস্থিতির প্যাটার্ন এবং মূল্যায়ন বিশ্লেষণ ব্যবহার করুন।</div>
+            <div class="course-meta">
+              <div class="course-meta-item">🎬 ১৮ ভিডিও</div>
+              <div class="course-meta-item">⏱️ ৬ ঘণ্টা</div>
+              <div class="course-meta-item">📝 ২ পরীক্ষা</div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
+            <div class="progress-label"><span>৩০% সম্পূর্ণ</span><span>৫/১৮ পাঠ</span></div>
+          </div>
+        </div>
+
+        <div class="course-card" onclick="openCourse()">
+          <div class="course-thumb bg-violet">🧠<span class="course-level beginner">প্রাথমিক</span><span class="course-cert">🏆 সার্টিফিকেট</span></div>
+          <div class="course-body">
+            <div class="course-title">পার্থক্যপূর্ণ শিক্ষণ কৌশল</div>
+            <div class="course-desc">প্রতিটি শিক্ষার্থীর ব্যক্তিগত চাহিদা এবং শেখার ধরন পূরণের জন্য আপনার শিক্ষণ কীভাবে সাজাবেন তা শিখুন।</div>
+            <div class="course-meta">
+              <div class="course-meta-item">🎬 ২০ ভিডিও</div>
+              <div class="course-meta-item">⏱️ ৭ ঘণ্টা</div>
+              <div class="course-meta-item">📝 ৪ পরীক্ষা</div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:100%;background:var(--teal)"></div></div>
+            <div class="progress-label"><span style="color:var(--teal);font-weight:700;">✅ সম্পন্ন!</span><span>২০/২০ পাঠ</span></div>
+          </div>
+        </div>
+
+        <div class="course-card" onclick="openCourse()">
+          <div class="course-thumb bg-coral">💬<span class="course-level intermediate">মধ্যবর্তী</span><span class="course-cert">🏆 সার্টিফিকেট</span></div>
+          <div class="course-body">
+            <div class="course-title">কার্যকর ক্লাসরুম যোগাযোগ</div>
+            <div class="course-desc">প্রমাণ-ভিত্তিক যোগাযোগ কৌশলের মাধ্যমে শক্তিশালী শিক্ষার্থী-শিক্ষক সম্পর্ক তৈরি করুন।</div>
+            <div class="course-meta">
+              <div class="course-meta-item">🎬 ১৬ ভিডিও</div>
+              <div class="course-meta-item">⏱️ ৫ ঘণ্টা</div>
+              <div class="course-meta-item">📝 ২ পরীক্ষা</div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+            <div class="progress-label"><span>শুরু হয়নি</span><span>০/১৬ পাঠ</span></div>
+          </div>
+        </div>
+
+        <div class="course-card" onclick="openCourse()">
+          <div class="course-thumb bg-blue">📋<span class="course-level advanced">উন্নত</span><span class="course-cert">🏆 সার্টিফিকেট</span></div>
+          <div class="course-body">
+            <div class="course-title">পাঠ্যক্রম ডিজাইন দক্ষতা</div>
+            <div class="course-desc">ব্যাকওয়ার্ড ডিজাইন এবং ইউবিডি নীতি ব্যবহার করে শূন্য থেকে শক্তিশালী, মানদণ্ড-সামঞ্জস্যপূর্ণ পাঠ্যক্রম ডিজাইন করুন।</div>
+            <div class="course-meta">
+              <div class="course-meta-item">🎬 ২৮ ভিডিও</div>
+              <div class="course-meta-item">⏱️ ১০ ঘণ্টা</div>
+              <div class="course-meta-item">📝 ৫ পরীক্ষা</div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+            <div class="progress-label"><span>শুরু হয়নি</span><span>০/২৮ পাঠ</span></div>
+          </div>
+        </div>
+
+        <div class="course-card" onclick="openCourse()">
+          <div class="course-thumb bg-green">🎯<span class="course-level beginner">প্রাথমিক</span><span class="course-cert">🏆 সার্টিফিকেট</span></div>
+          <div class="course-body">
+            <div class="course-title">মূল্যায়ন ও ফিডব্যাক সর্বোত্তম অনুশীলন</div>
+            <div class="course-desc">ন্যায্য, অর্থপূর্ণ মূল্যায়ন তৈরি করুন এবং এমন ফিডব্যাক প্রদান করুন যা আসলেই শিক্ষার্থীদের বৃদ্ধিতে সাহায্য করে।</div>
+            <div class="course-meta">
+              <div class="course-meta-item">🎬 ১৪ ভিডিও</div>
+              <div class="course-meta-item">⏱️ ৪ ঘণ্টা</div>
+              <div class="course-meta-item">📝 ২ পরীক্ষা</div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+            <div class="progress-label"><span>শুরু হয়নি</span><span>০/১৪ পাঠ</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Course View -->
+    <div class="active-course" id="active-course-view">
+      <div class="video-player">
+        <button onclick="closeCourse()" class="btn btn-outline" style="margin-bottom:14px;font-size:12px;padding:7px 14px;">← কোর্সে ফিরে যান</button>
+        <div class="video-screen">
+          <button class="video-play-btn" onclick="togglePlay(this)">▶</button>
+          <div style="position:absolute;top:16px;left:16px;background:rgba(0,0,0,0.6);color:#fff;font-size:12px;padding:5px 12px;border-radius:8px;font-weight:600;">আধুনিক শিক্ষকদের জন্য এআই টুলস</div>
+          <div style="position:absolute;bottom:16px;right:16px;background:rgba(0,0,0,0.6);color:#fff;font-size:11px;padding:5px 12px;border-radius:8px;">পাঠ ১৫/২৪ — পাঠ পরিকল্পনার জন্য এআই ব্যবহার</div>
+        </div>
+
+        <div class="video-controls">
+          <span style="font-size:14px;">⏮</span>
+          <span id="play-btn-ctrl" style="font-size:18px;cursor:pointer;" onclick="togglePlay2()">▶</span>
+          <span style="font-size:14px;">⏭</span>
+          <div class="video-progress-bar">
+            <div class="video-progress-fill" id="vid-progress"></div>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);white-space:nowrap;">১২:৩৪ / ৩৫:২২</span>
+          <span style="font-size:14px;cursor:pointer;">🔊</span>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="card-header"><div class="card-title">📝 পাঠ কুইজ — আপনার বোঝাপড়া পরীক্ষা করুন</div></div>
+          <div class="card-body">
+            <div style="margin-bottom:14px;">
+              <div style="font-size:14px;font-weight:600;margin-bottom:10px;">১. পাঠ পরিকল্পনার জন্য এআই ব্যবহারের প্রাথমিক সুবিধা কী?</div>
+              <div style="display:flex;flex-direction:column;gap:7px;">
+                <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:13px;"><input type="radio" name="q1" style="accent-color:var(--gold)"> এটি শিক্ষকের ভূমিকা সম্পূর্ণভাবে প্রতিস্থাপন করে</label>
+                <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:13px;"><input type="radio" name="q1" style="accent-color:var(--gold)"> এটি সময় সাশ্রয় করে এবং বড় পরিসরে ব্যক্তিগতকরণ সক্ষম করে</label>
+                <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:13px;"><input type="radio" name="q1" style="accent-color:var(--gold)"> এটি গ্রেডিং স্বয়ংক্রিয় করে</label>
+              </div>
+            </div>
+            <button class="btn btn-gold" onclick="submitLessonQuiz()">উত্তর জমা দিন</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-sidebar">
+        <div class="cert-preview">
+          <h4>আপনার সার্টিফিকেট</h4>
+          <div class="cert-name">সারাহ জনসন</div>
+          <div class="cert-course">আধুনিক শিক্ষকদের জন্য এআই টুলস</div>
+          <div class="cert-unlock">🔒 সার্টিফিকেট আনলক করতে সব ২৪টি পাঠ + ৩টি পরীক্ষা সম্পন্ন করুন</div>
+        </div>
+
+        <div class="lesson-list">
+          <div style="padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);border-bottom:1px solid var(--border);">কোর্স পাঠসমূহ</div>
+          <div class="lesson-item"><span class="lesson-num">০১</span><span class="lesson-icon">🎬</span><span class="lesson-title">স্বাগতম ও সারসংক্ষেপ</span><span class="lesson-done">✓</span></div>
+          <div class="lesson-item"><span class="lesson-num">০২</span><span class="lesson-icon">🎬</span><span class="lesson-title">শিক্ষায় এআই বোঝা</span><span class="lesson-done">✓</span></div>
+          <div class="lesson-item"><span class="lesson-num">০৩</span><span class="lesson-icon">📝</span><span class="lesson-title">কুইজ — মডিউল ১</span><span class="lesson-done">✓</span></div>
+          <div class="lesson-item"><span class="lesson-num">০৪</span><span class="lesson-icon">🎬</span><span class="lesson-title">এআই পাঠ জেনারেটর</span><span class="lesson-done">✓</span></div>
+          <div class="lesson-item active"><span class="lesson-num">১৫</span><span class="lesson-icon">🎬</span><span class="lesson-title">পাঠ পরিকল্পনার জন্য এআই ব্যবহার</span><span style="font-size:12px;background:var(--gold);padding:2px 8px;border-radius:4px;font-weight:700;color:var(--ink);">এখন</span></div>
+          <div class="lesson-item"><span class="lesson-num">১৬</span><span class="lesson-icon">🎬</span><span class="lesson-title">এআই ফিডব্যাক টুলস</span><span style="color:var(--text-light);font-size:12px;">🔒</span></div>
+          <div class="lesson-item"><span class="lesson-num">১৭</span><span class="lesson-icon">🎬</span><span class="lesson-title">এআই আউটপুট মূল্যায়ন</span><span style="color:var(--text-light);font-size:12px;">🔒</span></div>
+          <div class="lesson-item"><span class="lesson-num">২৪</span><span class="lesson-icon">🏆</span><span class="lesson-title">চূড়ান্ত মূল্যায়ন</span><span style="color:var(--text-light);font-size:12px;">🔒</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== MODALS ===== -->
+<div class="modal-overlay" id="modal-class" onclick="closeModal(event,'modal-class')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title">Create New Class</div><div class="modal-sub">Add a new class to your teaching roster</div></div>
+      <div class="modal-close" onclick="closeModal(null,'modal-class')">✕</div>
+    </div>
+    <div class="light-form-group">
+      <label class="light-label">Class Name / Subject</label>
+      <input class="light-input" placeholder="e.g. Mathematics, Physics...">
+    </div>
+    <div style="display:flex;gap:12px;">
+      <div class="light-form-group" style="flex:1">
+        <label class="light-label">Grade Level</label>
+        <select class="light-select"><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
+      </div>
+      <div class="light-form-group" style="flex:1">
+        <label class="light-label">Section</label>
+        <input class="light-input" placeholder="e.g. A, B, C...">
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;">
+      <div class="light-form-group" style="flex:1">
+        <label class="light-label">Room Number</label>
+        <input class="light-input" placeholder="e.g. Room 204">
+      </div>
+      <div class="light-form-group" style="flex:1">
+        <label class="light-label">Schedule</label>
+        <input class="light-input" placeholder="e.g. Mon/Wed 10:00 AM">
+      </div>
+    </div>
+    <div class="light-form-group">
+      <label class="light-label">Description (optional)</label>
+      <textarea class="light-textarea" placeholder="Brief description of the class..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal(null,'modal-class')">Cancel</button>
+      <button class="btn btn-gold" onclick="closeModal(null,'modal-class');showToast('🎓 New class created successfully!')">Create Class</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-material" onclick="closeModal(event,'modal-material')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title">Upload Learning Material</div><div class="modal-sub">Add classroom resources for your students</div></div>
+      <div class="modal-close" onclick="closeModal(null,'modal-material')">✕</div>
+    </div>
+    <div class="light-form-group">
+      <label class="light-label">Material Title</label>
+      <input class="light-input" placeholder="e.g. Introduction to Trigonometry">
+    </div>
+    <div style="display:flex;gap:12px;">
+      <div class="light-form-group" style="flex:1">
+        <label class="light-label">Class</label>
+        <select class="light-select"><option>Mathematics 10A</option><option>Algebra II 11B</option><option>Statistics 12</option></select>
+      </div>
+      <div class="light-form-group" style="flex:1">
+        <label class="light-label">Material Type</label>
+        <select class="light-select"><option>Slides (PPT/PDF)</option><option>Video</option><option>Worksheet</option><option>Document</option></select>
+      </div>
+    </div>
+    <div class="light-form-group">
+      <label class="light-label">Upload File</label>
+      <div style="border:2px dashed var(--border);border-radius:12px;padding:28px;text-align:center;cursor:pointer;color:var(--text-muted);font-size:13px;">
+        📂 Click to upload or drag & drop<br><span style="font-size:11px;margin-top:4px;display:block;">PDF, PPT, MP4, DOCX up to 100MB</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal(null,'modal-material')">Cancel</button>
+      <button class="btn btn-gold" onclick="closeModal(null,'modal-material');showToast('📂 Material uploaded successfully!')">Upload Material</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✓</span>
+  <span id="toast-msg">Done!</span>
+</div>
+
+<!-- ===== BOTTOM NAVIGATION (TABLET) ===== -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-items">
+    <div class="bottom-nav-item active" onclick="showPage('dashboard', this)">
+      <div class="bottom-nav-icon">🏠</div>
+      <div class="bottom-nav-label">সারসংক্ষেপ</div>
+    </div>
+    <div class="bottom-nav-item" onclick="showPage('classes', this)">
+      <div class="bottom-nav-icon">📚</div>
+      <div class="bottom-nav-label">ক্লাসসমূহ</div>
+    </div>
+    <div class="bottom-nav-item" onclick="showPage('ai', this)">
+      <div class="bottom-nav-icon">🤖</div>
+      <div class="bottom-nav-label">এআই</div>
+    </div>
+    <div class="bottom-nav-item" onclick="showPage('attendance', this)">
+      <div class="bottom-nav-icon">✅</div>
+      <div class="bottom-nav-label">উপস্থিতি</div>
+    </div>
+    <div class="bottom-nav-item" onclick="showPage('training', this)">
+      <div class="bottom-nav-icon">🏆</div>
+      <div class="bottom-nav-label">কোর্সসমূহ</div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // ===== NAVIGATION =====
+  function showPage(id, navEl) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.bottom-nav-item').forEach(n => n.classList.remove('active'));
+
+    const page = document.getElementById('page-' + id);
+    if (page) page.classList.add('active');
+
+    if (navEl) {
+      navEl.classList.add('active');
+    } else {
+      // Auto-activate nav items
+      document.querySelectorAll('.nav-item, .bottom-nav-item').forEach(n => {
+        if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+id+"'")) {
+          n.classList.add('active');
+        }
+      });
+    }
+
+    const titles = {
+      dashboard: 'ড্যাশবোর্ড', classes: 'আমার ক্লাস', materials: 'শিক্ষা উপকরণ',
+      attendance: 'উপস্থিতি', ai: 'এআই সহায়ক', quiz: 'কুইজ ও পরীক্ষা',
+      curriculum: 'পাঠ্যক্রম নির্মাতা', training: 'প্রশিক্ষণ কোর্স'
+    };
+    document.getElementById('topbar-title').textContent = titles[id] || 'এডুমেন্টর প্রো';
+  }
+
+  // ===== TASK TOGGLE =====
+  function toggleTask(el) {
+    const done = el.classList.toggle('done');
+    const text = el.nextElementSibling;
+    if (done) { el.textContent = '✓'; text.classList.add('done'); }
+    else { el.textContent = ''; text.classList.remove('done'); }
+  }
+
+  // ===== TOAST =====
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ===== MODALS =====
+  function openModal(id) { document.getElementById(id).classList.add('show'); }
+  function closeModal(e, id) {
+    if (!e || e.target.classList.contains('modal-overlay')) document.getElementById(id).classList.remove('show');
+  }
+
+  // ===== ATTENDANCE =====
+  const students = [
+    'Aiden Mitchell','Bella Thompson','Carlos Rivera','Diana Chen','Ethan Patel',
+    'Fiona Williams','George Johnson','Hannah Davis','Ian Clark','Jessica Martin',
+    'Kyle Anderson','Lily Taylor','Mason White','Natalie Brown','Oliver Harris',
+    'Priya Sharma','Quinn Jones','Rachel Lee','Samuel Walker','Tina Robinson',
+    'Uma Scott','Victor King','Wendy Wright','Xavier Green','Yara Adams',
+    'Zoe Baker','Aaron Hall','Brianna Young','Chris Allen','Dana Nelson'
+  ];
+
+  let attStatus = {};
+
+  function buildAttTable() {
+    const body = document.getElementById('att-body');
+    body.innerHTML = '';
+    students.forEach((name, i) => {
+      const id = 'STU-' + String(i+1).padStart(3,'0');
+      if (!attStatus[i]) attStatus[i] = Math.random() > 0.15 ? 'present' : (Math.random() > 0.5 ? 'absent' : 'late');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${i+1}</td>
+        <td><strong>${name}</strong></td>
+        <td><span class="student-id">${id}</span></td>
+        <td>
+          <div class="att-status">
+            <button class="att-btn present ${attStatus[i]==='present'?'selected':''}" onclick="markAtt(${i},'present',this)">✓ উপস্থিত</button>
+            <button class="att-btn absent ${attStatus[i]==='absent'?'selected':''}" onclick="markAtt(${i},'absent',this)">✗ অনুপস্থিত</button>
+            <button class="att-btn late ${attStatus[i]==='late'?'selected':''}" onclick="markAtt(${i},'late',this)">⏰ দেরি</button>
+          </div>
+        </td>
+        <td><input style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;outline:none;font-family:'Hind Siliguri',Satoshi,sans-serif;" placeholder="নোট যোগ করুন..."></td>
+      `;
+      body.appendChild(tr);
+    });
+    updateAttSummary();
+  }
+
+  function markAtt(idx, status, btn) {
+    attStatus[idx] = status;
+    const row = btn.closest('tr');
+    row.querySelectorAll('.att-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    updateAttSummary();
+  }
+
+  function updateAttSummary() {
+    const vals = Object.values(attStatus);
+    document.getElementById('att-present-count').textContent = vals.filter(v=>v==='present').length;
+    document.getElementById('att-absent-count').textContent = vals.filter(v=>v==='absent').length;
+    document.getElementById('att-late-count').textContent = vals.filter(v=>v==='late').length;
+  }
+
+  function saveAttendance() { showToast('✅ উপস্থিতি সফলভাবে সংরক্ষিত হয়েছে!'); }
+
+  let attDateOffset = 0;
+  function changeDate(dir) {
+    attDateOffset += dir;
+    const d = new Date(2026,1,17);
+    d.setDate(d.getDate() + attDateOffset);
+    const days = ['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
+    const months = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+    document.getElementById('att-date').textContent = `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}, ${d.getFullYear()}`;
+  }
+
+  function selectAttClass(el, name) {
+    document.querySelectorAll('.class-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    attStatus = {};
+    buildAttTable();
+  }
+
+  function filterMat(el, cat) {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ===== AI CHAT =====
+  const aiResponses = {
+    default: [
+      "I'll create a comprehensive lesson plan for that topic right away! Here's a structured plan:\n\n📋 **Lesson Title**: Introduction to the Topic\n⏱️ **Duration**: 45 minutes\n\n**Learning Objectives**: Students will understand core concepts and apply them to real problems.\n\n**Activities**:\n1. Warm-up (5 min) — Review prior knowledge\n2. Direct Instruction (15 min) — Core concept introduction\n3. Guided Practice (15 min) — Worked examples\n4. Independent Practice (10 min) — Student exercises",
+      "Great idea! Here are 5 multiple choice questions on that topic:\n\nQ1. Which of the following best describes this concept?\na) Option A  b) Option B ✓  c) Option C  d) Option D\n\nQ2. What happens when we apply this formula?\na) Result increases  b) Result decreases ✓  c) No change  d) Cannot determine\n\nWould you like me to generate more questions or adjust the difficulty level?",
+      "Here's a 12-week curriculum outline for that class:\n\n📅 **Week 1–2**: Foundations and Introduction\n📅 **Week 3–4**: Core Concepts\n📅 **Week 5–6**: Application and Practice\n📅 **Week 7–8**: Advanced Topics\n📅 **Week 9–10**: Analysis & Critical Thinking\n📅 **Week 11–12**: Review and Assessment\n\nEach unit includes lecture materials, worksheets, and formative assessments. Shall I expand on any week?",
+    ]
+  };
+
+  function sendAIMessage() {
+    const input = document.getElementById('ai-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+    input.value = '';
+
+    const chat = document.getElementById('ai-chat');
+
+    // User message
+    const userDiv = document.createElement('div');
+    userDiv.className = 'ai-message user-message';
+    userDiv.innerHTML = `<div class="user-bubble">${msg}</div>`;
+    chat.appendChild(userDiv);
+
+    // Typing indicator
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'ai-message';
+    typingDiv.innerHTML = `<div class="ai-avatar">✦</div><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+    chat.appendChild(typingDiv);
+    chat.scrollTop = chat.scrollHeight;
+
+    setTimeout(() => {
+      typingDiv.remove();
+      const responses = aiResponses.default;
+      const resp = responses[Math.floor(Math.random() * responses.length)];
+      const aiDiv = document.createElement('div');
+      aiDiv.className = 'ai-message';
+      aiDiv.innerHTML = `<div class="ai-avatar">✦</div><div class="ai-bubble">${resp.replace(/\n/g,'<br>')}</div>`;
+      chat.appendChild(aiDiv);
+      chat.scrollTop = chat.scrollHeight;
+    }, 1800);
+  }
+
+  function quickPrompt(text) {
+    document.getElementById('ai-input').value = text;
+    sendAIMessage();
+  }
+
+  // ===== QUIZ GENERATOR =====
+  function generateQuiz() {
+    const btn = event.target;
+    const topic = document.getElementById('q-topic').value || 'Mathematics';
+    const diff = document.getElementById('q-diff').value;
+    btn.textContent = '⏳ Generating…';
+    btn.classList.add('generating');
+
+    setTimeout(() => {
+      btn.textContent = '✦ Generate Assessment with AI';
+      btn.classList.remove('generating');
+      showToast('📝 10-question quiz generated!');
+
+      document.getElementById('quiz-preview-content').innerHTML = `
+        <div class="preview-q">
+          <div class="preview-q-text">Q1. Which formula solves any ${topic} problem?</div>
+          <div class="preview-option correct">✓ A. The general formula</div>
+          <div class="preview-option">B. Only specific cases</div>
+          <div class="preview-option">C. No formula exists</div>
+        </div>
+        <div class="preview-q">
+          <div class="preview-q-text">Q2. (${diff}) What is the relationship between A and B?</div>
+          <div class="preview-option">A. A > B always</div>
+          <div class="preview-option correct">✓ B. A ≤ B in this case</div>
+          <div class="preview-option">C. A = B always</div>
+        </div>
+        <div class="preview-q">
+          <div class="preview-q-text">Q3. Evaluate the expression when x = 2</div>
+          <div class="preview-option">A. 6</div>
+          <div class="preview-option">B. 10</div>
+          <div class="preview-option correct">✓ C. 8</div>
+        </div>
+      `;
+    }, 2200);
+  }
+
+  // ===== CURRICULUM GENERATOR =====
+  function generateCurriculum() {
+    showToast('🗺️ AI Curriculum generated successfully!');
+  }
+
+  // ===== TRAINING COURSE =====
+  function openCourse() {
+    document.getElementById('courses-view').style.display = 'none';
+    document.getElementById('active-course-view').classList.add('show');
+  }
+
+  function closeCourse() {
+    document.getElementById('active-course-view').classList.remove('show');
+    document.getElementById('courses-view').style.display = 'block';
+  }
+
+  let isPlaying = false;
+  function togglePlay(btn) { isPlaying = !isPlaying; btn.textContent = isPlaying ? '⏸' : '▶'; }
+  function togglePlay2() { isPlaying = !isPlaying; document.getElementById('play-btn-ctrl').textContent = isPlaying ? '⏸' : '▶'; }
+
+  function submitLessonQuiz() { showToast('🎯 সঠিক! দুর্দান্ত! পরবর্তী পাঠে যাচ্ছি।'); }
+
+  // ===== INIT =====
+  window.onload = function() {
+    buildAttTable();
+  };
+</script>
+</body>
+</html>
